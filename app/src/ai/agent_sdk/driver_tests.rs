@@ -26,7 +26,6 @@ use warp_cli::{
     SESSION_SHARING_SERVER_URL_OVERRIDE_ENV, WS_SERVER_URL_OVERRIDE_ENV,
 };
 use warp_core::channel::ChannelState;
-use warp_core::features::FeatureFlag;
 use warp_graphql::ai::AgentTaskState;
 use warp_graphql::platform_error::PlatformErrorMessageFormat;
 use warp_managed_secrets::ManagedSecretValue;
@@ -1799,7 +1798,6 @@ fn driver_with_hooks(
 #[test]
 fn hook_setup_records_the_run_and_its_surface() {
     App::test((), |mut app| async move {
-        let _flag = FeatureFlag::AgentHooks.override_enabled(true);
         let temp = TempDir::new().unwrap();
         let (driver, _terminal, _hooks) = driver_with_hooks(&mut app, temp.path());
         let task_id: AmbientAgentTaskId = HOOK_TASK_ID.parse().unwrap();
@@ -1838,7 +1836,6 @@ fn worker_hook_source(dir: &Path) -> hooks::ConfiguredHookSource {
 #[test]
 fn hook_sources_finalize_once_and_a_second_load_fails() {
     App::test((), |mut app| async move {
-        let _flag = FeatureFlag::AgentHooks.override_enabled(true);
         let temp = TempDir::new().unwrap();
         let working_dir = dunce::canonicalize(temp.path()).unwrap();
         for dir in ["early", "late"] {
@@ -1892,7 +1889,6 @@ fn hook_sources_finalize_once_and_a_second_load_fails() {
 #[test]
 fn execute_run_does_not_fire_session_start() {
     App::test((), |mut app| async move {
-        let _flag = FeatureFlag::AgentHooks.override_enabled(true);
         let temp = TempDir::new().unwrap();
         let (driver, terminal, hooks) = driver_with_hooks(&mut app, temp.path());
         app.update(|ctx| {
@@ -1926,7 +1922,6 @@ fn execute_run_does_not_fire_session_start() {
 #[test]
 fn a_scripted_ask_from_a_fail_run_source_ends_the_run_with_the_hook_reason() {
     App::test((), |mut app| async move {
-        let _flag = FeatureFlag::AgentHooks.override_enabled(true);
         let harness = test_utils::controller_harness(&mut app);
         let binding = test_binding(
             test_source_id("policy"),
